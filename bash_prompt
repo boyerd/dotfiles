@@ -1,0 +1,45 @@
+
+# this __line_two() function relies on sourcing .git-prompt.sh first:
+#
+# The git-prompt script is originally from the git project
+# https://github.com/git/git/blob/master/contrib/completion/git-prompt.sh
+#
+USE_GIT=N
+
+if [ -f ~/.git-prompt.sh ]; then
+    source ~/.git-prompt.sh
+    USE_GIT=Y
+fi
+
+GIT_PS1_SHOWDIRTYSTATE=1
+GIT_PS1_SHOWSTASHSTATE=1 
+GIT_PS1_SHOWUNTRACKEDFILES=1
+GIT_PS1_SHOWCOLORHINTS=1
+GIT_PS1_SHOWUPSTREAM="verbose name git"
+
+__line_two() {
+    OUTPUT=""
+    STRING=$(__git_ps1 " (%s)")
+
+    if [[ ! -z "$STRING" ]]; then
+        echo -e -n "\n"
+        OUTPUT="├─[   "
+    fi
+
+    echo -e -n $OUTPUT
+}
+
+__am_i_root() {
+    WHOAMI=`whoami`
+    if [[ $WHOAMI == "root" ]]; then
+        echo -e "\e[31m"
+    fi
+}
+
+# babby's first prompt: 
+if [ $USE_GIT == "Y" ]; then
+    # if .git-prompt.sh is present, use the git-enabled __line_two function via precommand
+    PROMPT_COMMAND='__git_ps1 "\[\e[34m\]┌─[\[\e[37m\]$(__am_i_root)\u\[\e[37m\]@\h \t ($?)\[\e[34m\]] $(__line_two)\[\e[37m\]" "\n\[\e[34m\]└─[\[\e[37m\]\w\[\e[34m\]]>\[\e[0m\] "'
+else
+    PS1="\[\e[34m\]┌─[\[\e[37m\]$(__am_i_root)\u\[\e[37m\]@\h \t ($?)\[\e[34m\]]\n\[\e[34m\]└─[\[\e[37m\]\w\[\e[34m\]]>\[\e[0m\] "
+fi

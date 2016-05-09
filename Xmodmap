@@ -1,0 +1,3 @@
+clear Lock
+keycode 65 = Escape
+keycode 64 = space underscore space
